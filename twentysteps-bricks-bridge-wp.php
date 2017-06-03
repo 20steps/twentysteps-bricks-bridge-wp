@@ -80,10 +80,12 @@
 			
 			// preview in app on devices
 			if ($this->isPreviewEnabled()) {
-				add_action('show_user_profile', array($this, 'extendUserProfile'));
-				add_action('edit_user_profile', array($this, 'extendUserProfile'));
-				add_action('personal_options_update', array($this, 'extendUserProfileUpdate'));
-				add_action('admin_init', array($this,'forcePreviewBeforePublishInit'));
+				add_action('show_user_profile', [$this, 'extendUserProfile']);
+				add_action('edit_user_profile', [$this, 'extendUserProfile']);
+				add_action('personal_options_update', [$this, 'extendUserProfileUpdate']);
+			}
+			if ($this->isForcePreviewBeforePublishEnabled()) {
+    			add_action('admin_init', array($this,'forcePreviewBeforePublishInit'));
 				add_action('edit_form_advanced', array($this,'forcePreviewBeforePublish'));
 			}
 			
@@ -175,6 +177,21 @@
 				$value='true';
 			}
 			return update_site_option('bricks_basic_pages_bridge_preview_enabled', $value);
+		}
+		
+		public function getForcePreviewBeforePublishEnabled() {
+			return get_site_option('bricks_basic_pages_bridge_preview_force_before_publish_enabled','false');
+		}
+		
+		public function isForcePreviewBeforePublishEnabled() {
+			return $this->getForcePreviewBeforePublishEnabled()=='true';
+        }
+		
+		public function setForcePreviewBeforePublishEnabled($value) {
+			if ($value!= 'true' && $value!='false') {
+				$value='true';
+			}
+			return update_site_option('bricks_basic_pages_bridge_preview_force_before_publish_enabled', $value);
 		}
 		
 		public function getCRUDEventsEnabled() {
@@ -339,6 +356,14 @@
                         </tr>
                         <tr>
                             <th scope="row">
+                                <label for="preview_force_before_publish_enabled">Force preview before publish enabled? (enter "true" or "false")<br/></label>
+                            </th>
+                            <td>
+                                <input type="text" id="preview_force_before_publish_enabled" name="preview_force_before_publish_enabled" class="regular-text" value="<?php echo $this->getForcePreviewBeforePublishEnabled() ?>">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
                                 <label for="crud_events_enabled">CRUD Events enabled? (enter "true" or "false")<br/></label>
                             </th>
                             <td>
@@ -347,10 +372,8 @@
                         </tr>
                         </tbody>
                     </table>
-                    <p>
-                    <PRE>=> CHECK: <?php echo $this->getCheckBridgeSettingsResult() ?></PRE>
-                    <PRE>=> API URL Prefix: <?php echo $this->getApiUrlPrefix() ?></PRE>
-                    </p>
+                    <div>=> CHECK: <?php echo $this->getCheckBridgeSettingsResult() ?></div>
+                    <div>=> API URL Prefix: <?php echo $this->getApiUrlPrefix() ?></div>
                     <p class="submit">
                         <input type="submit" id="submit" name="submit" class="button button-primary" value="Save and check settings">
                     </p>
@@ -373,6 +396,7 @@
 			$this->setApiProtocol($_POST['api_protocol']);
 			$this->setInvalidateAllEnabled($_POST['invalidate_all_enabled']);
 			$this->setPreviewEnabled($_POST['preview_enabled']);
+			$this->setForcePreviewBeforePublishEnabled($_POST['preview_force_before_publish_enabled']);
 			$this->setCRUDEventsEnabled($_POST['crud_events_enabled']);
 			
 			// check bridge and show settings page again
