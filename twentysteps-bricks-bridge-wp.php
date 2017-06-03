@@ -122,6 +122,10 @@ class BricksBridge {
 		update_site_option('bricks_api_protocol',$value);
 	}
 
+	private function checkBridgeSettings() {
+	    return 'succeeded';
+    }
+    
 	public function getInvalidateAllEnabled() {
 		return get_site_option('bricks_basic_pages_bridge_invalidate_all_enabled','true');
 	}
@@ -341,18 +345,19 @@ class BricksBridge {
 			wp_die('rejected');
 		}
 
+		// update settings
 		$this->setApiKey($_POST['api_key']);
 		$this->setApiHost($_POST['api_host']);
 		$this->setApiProtocol($_POST['api_protocol']);
 		$this->setInvalidateAllEnabled($_POST['invalidate_all_enabled']);
 		$this->setPreviewEnabled($_POST['preview_enabled']);
 		$this->setCRUDEventsEnabled($_POST['crud_events_enabled']);
+		
+        // check bridge and show settings page again
+        wp_redirect(admin_url('network/settings.php?page=bricks-bridge&check='.$this->checkBridgeSettings()));
 
-		// process your fields from $_POST here and update_site_option
-		wp_redirect(admin_url('network/settings.php?page=bricks-bridge'));
 		exit;
 	}
-
 
 	// extend user profile (e.g. for external preview)
 
