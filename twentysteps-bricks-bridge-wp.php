@@ -148,7 +148,14 @@
             }
 		    return 'n/a';
         }
-        
+		
+		private function getFlash() {
+			if (array_key_exists('flash',$_GET)) {
+				return $_GET['flash'];
+			}
+			return 'n/a';
+		}
+		
 		public function getInvalidateAllEnabled() {
 			return get_site_option('bricks_basic_pages_bridge_invalidate_all_enabled','true');
 		}
@@ -249,7 +256,7 @@
 		}
 		
 		private function getPushApiPath() {
-			return get_option('bricks_api_push_path','/api/mobile/v1.0/push/message.json');
+			return get_option('bricks_api_push_path','/bricks/api/v1.0/your-custom-bundle-key/push/message');
 		}
 		
 		private function setPushApiPath($value) {
@@ -623,6 +630,7 @@
                     <p class="submit">
                         <input type="submit" id="submit" name="submit" class="button button-primary" value="Push">
                     </p>
+                    <div>=> <?php echo $this->getFlash() ?></div>
                 </form>
             </div>
 			<?php
@@ -634,11 +642,25 @@
 			check_admin_referer('twentysteps_bricks_bridge_nonce');
 			
 			$url = $this->getPushApiUrlPrefix().'?key='.$this->getPushApiKey().'&text='.urlencode($_POST['text']).'&url='.urlencode($_POST['url']).'&arn='.urlencode($_POST['arn']);
-			wp_remote_get($url);
+			$response = wp_remote_get($url);
 			
+			$flash = '';
+			if (is_wp_error($response)) {
+				$flash = '['.$response->get_error_message().']';
+			} elseif (is_array($response)) {
+				$responseCode = wp_remote_retrieve_response_code($response);
+				if ($responseCode == 200) {
+					$flash = '[OK]';
+				} else {
+					$responseBody = wp_remote_retrieve_body($response);
+					$flash = '['.$responseCode.','.substr($responseBody,0,512).']';
+				}
+			} else {
+				$flash = '[ITERNAL_ERROR]';
+			}
 			
 			// process your fields from $_POST here and update_site_option
-			wp_redirect(admin_url('admin.php?page=push_to_app'));
+			wp_redirect(admin_url('admin.php?page=push_to_app&flash='.urlencode($flash)));
 			exit;
 		}
 		
