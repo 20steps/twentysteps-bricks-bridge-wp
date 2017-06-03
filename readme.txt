@@ -1,8 +1,8 @@
-=== 20steps Bricks Bridge ===
+=== 20steps Bricks Bridge for Wordpress ===
 Contributors: hhva@20steps.de
 Tags: 20steps, Bricks, Varmish
-Requires at least: 4.0
-Tested up to: 4.3
+Requires at least: 4.7
+Tested up to: 4.8
 
 Send messages to Bricks API on changes of posts in Wordpress so that Bricks can:
 

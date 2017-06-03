@@ -1,16 +1,16 @@
 <?php
 /*
-Plugin Name: 20steps Bricks Bridge
+Plugin Name: 20steps Bricks Bridge for Wordpress
 Plugin URI: http://20steps.de
 Description: Send messages to Bricks API on changes of posts in Wordpress so that Bricks can invalidate caches for nodes in Pages Brick and Varnish,  update search indices in Found Brick etc.
-Version: 0.1
+Version: 0.2
 Author: Helmut Hoffer von Ankershoffen (hhva@20steps.de)
 Author URI: http://20steps.de
 License: http://www.apache.org/licenses/LICENSE-2.0
-Text Domain: twentysteps-bricks-bridge
+Text Domain: twentysteps-bricks-bridge-wp
 Network: true
 
-Copyright 2016: Helmut Hoffer von Ankershoffen (hhva@20steps.de)
+Copyright 2017: Helmut Hoffer von Ankershoffen (hhva@20steps.de)
 
 */
 

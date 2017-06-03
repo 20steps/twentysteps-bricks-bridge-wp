@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: twentysteps-bricks-bridge.php:0
+#: twentysteps-bricks-bridge-wp.php:0
 msgid "tbd"
 msgstr "tbd"
 
