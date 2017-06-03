@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: 20steps Bricks Bridge for Wordpress
-Plugin URI: http://20steps.de
+Plugin URI: https://20steps.de
 Description: Send messages to Bricks API on changes of posts in Wordpress so that Bricks can invalidate caches for nodes in Pages Brick and Varnish,  update search indices in Found Brick etc.
 Version: 0.2
 Author: Helmut Hoffer von Ankershoffen (hhva@20steps.de)
-Author URI: http://20steps.de
+Author URI: https://20steps.de
 License: http://www.apache.org/licenses/LICENSE-2.0
 Text Domain: twentysteps-bricks-bridge-wp
 Network: true
@@ -15,16 +15,24 @@ Copyright 2017: Helmut Hoffer von Ankershoffen (hhva@20steps.de)
 */
 
 class BricksBridge {
-
-	protected $eventQueue = null;
+	
+	/**
+	 * @var array
+	 */
+	protected $eventQueue = [];
+	/**
+	 * @var null|string
+	 */
 	protected $domain = null;
-	protected $blogId = null;
 
+	/**
+	 * @var integer
+	 */
+	protected $blogId = null;
 
 	// initialization
 
 	public function __construct() {
-		$this->eventQueue = array();
 		$this->blogId=get_current_blog_id();
 		$this->domain=get_blog_details()->{'domain'};
 
@@ -40,7 +48,7 @@ class BricksBridge {
 	}
 
 	public function init() {
-		load_plugin_textdomain( 'twentysteps-bricks-bridge' );
+		load_plugin_textdomain( 'twentysteps-bricks-bridge-wp' );
 
 		// settings page
 		add_action('network_admin_menu', array($this, 'addSettingsPage') );
@@ -54,7 +62,7 @@ class BricksBridge {
 
 		// manual cache and CDNs invalidation
 		if ($this->isInvalidateAllEnabled()) {
-			if ( isset($_GET['20steps_bricks_bridge_invalidate_all']) && check_admin_referer('twentysteps-bricks-bridge') ) {
+			if ( isset($_GET['twentysteps_bricks_bridge_wp_invalidate_all']) && check_admin_referer('twentysteps-bricks-bridge-wp') ) {
 				add_action( 'admin_notices' , array( $this, 'invalidateAllMessage'));
 			}
 
@@ -99,7 +107,7 @@ class BricksBridge {
 	}
 
 	private function getApiHost() {
-		return get_site_option('bricks_api_host','20steps.pages.20steps.localhost.com');
+		return get_site_option('bricks_api_host','api.localhost.com');
 	}
 
 	private function setApiHost($value) {
@@ -183,7 +191,7 @@ class BricksBridge {
 	}
 
 	private function getPushApiHost() {
-		return get_option('bricks_api_push_host','20steps.pages.20steps.localhost.com');
+		return get_option('bricks_api_push_host','api.localhost.com');
 	}
 
 	private function setPushApiHost($value) {
@@ -351,14 +359,14 @@ class BricksBridge {
 	function extendUserProfile($user) {
 		?>
 		<hr/>
-		<h3 id="20steps_bricks_bridge">20steps Bricks Bridge</h3>
+		<h3 id="twentysteps_bricks_bridge">20steps Bricks Bridge</h3>
 		<table class="form-table">
 			<tr>
 				<th>
-					<label for="20steps_bricks_bridge_username_app"><?php _e('Username in App'); ?></label>
+					<label for="twentysteps_bricks_bridge_wp_username_app"><?php _e('Username in App'); ?></label>
 				</th>
 				<td>
-					<input type="text" name="20steps_bricks_bridge_username_app" id="20steps_bricks_bridge_username_app" value="<?php echo esc_attr( get_the_author_meta( '20steps_bricks_bridge_username_app', $user->ID ) ); ?>" class="regular-text" />
+					<input type="text" name="twentysteps_bricks_bridge_wp_username_app" id="twentysteps_bricks_bridge_wp_username_app" value="<?php echo esc_attr( get_the_author_meta( 'twentysteps_bricks_bridge_wp_username_app', $user->ID ) ); ?>" class="regular-text" />
 					<br><span class="description">Your username in the associated Mobile App</span>
 				</td>
 			</tr>
@@ -369,7 +377,7 @@ class BricksBridge {
 
 	function extendUserProfileUpdate($userId) {
 		if ( current_user_can('edit_user',$userId)) {
-			update_user_meta($userId, '20steps_bricks_bridge_username_app', $_POST['20steps_bricks_bridge_username_app']);
+			update_user_meta($userId, 'twentysteps_bricks_bridge_wp_username_app', $_POST['twentysteps_bricks_bridge_wp_username_app']);
 		}
 	}
 
@@ -377,23 +385,23 @@ class BricksBridge {
 
 	function adminbarInvalidateAll($admin_bar){
 		$admin_bar->add_menu( array(
-			'id'	=> 'twentysteps-bricks-bridge-invalidate-all',
+			'id'	=> 'twentysteps-bricks-bridge-wp-invalidate-all',
 			'title' => 'Invalidate Varnish and CDN',
-			'href'  => wp_nonce_url(add_query_arg('20steps_bricks_bridge_invalidate_all', 1), 'twentysteps-bricks-bridge'),
+			'href'  => wp_nonce_url(add_query_arg('twentysteps_bricks_bridge_wp_invalidate_all', 1), 'twentysteps-bricks-bridge-wp'),
 			'meta'  => array(
-				'title' => __('Invalidate Varnish and CDN','twentysteps-bricks-bridge'),
+				'title' => __('Invalidate Varnish and CDN','twentysteps-bricks-bridge-wp'),
 			),
 		));
 	}
 
 	function invalidateAll() {
-		$url = wp_nonce_url(admin_url('?20steps_bricks_bridge_invalidate_all'), 'twentysteps-bricks-bridge');
-		$intro = sprintf( __('<a href="%1$s">20steps Bricks Bridge / Invalidate All</a> 20steps Bricks Bridge automatically invalidates pages and posts in Varnish and CDN when published or updated. Click here to invalidate everything e.g. after changing theme options.', 'twentysteps-bricks-bridge' ), 'http://wordpress.org/plugins/twentysteps-bricks-bridge/' );
-		$button =  __('Press the button below to force it to purge your entire cache.', 'twentysteps-bricks-bridge' );
+		$url = wp_nonce_url(admin_url('?twentysteps_bricks_bridge_wp_invalidate_all'), 'twentysteps-bricks-bridge-wp');
+		$intro = sprintf( __('<a href="%1$s">20steps Bricks Bridge / Invalidate All</a> 20steps Bricks Bridge automatically invalidates pages and posts in Varnish and CDN when published or updated. Click here to invalidate everything e.g. after changing theme options.', 'twentysteps-bricks-bridge-wp' ), 'http://wordpress.org/plugins/twentysteps-bricks-bridge-wp/' );
+		$button =  __('Press the button below to force it to purge your entire cache.', 'twentysteps-bricks-bridge-wp' );
 		$button .= '</p><p><span class="button"><a href="'.$url.'"><strong>';
-		$button .= __('Invalidate Varnish and CDN', 'twentysteps-bricks-bridge' );
+		$button .= __('Invalidate Varnish and CDN', 'twentysteps-bricks-bridge-wp' );
 		$button .= '</strong></a></span>';
-		$nobutton =  __('You do not have permission to invalidate all. Please contact your super user.', 'twentysteps-bricks-bridge' );
+		$nobutton =  __('You do not have permission to invalidate all. Please contact your super user.', 'twentysteps-bricks-bridge-wp' );
 		if (
 			// SingleSite - admins can always purge
 			( !is_multisite() && current_user_can('activate_plugins') ) ||
@@ -406,11 +414,11 @@ class BricksBridge {
 		} else {
 			$text = $intro.' '.$nobutton;
 		}
-		echo "<p class='twentysteps-bricks-bridge-invalidate-all'>$text</p>\n";
+		echo "<p class='twentysteps-bricks-bridge-wp-invalidate-all'>$text</p>\n";
 	}
 
 	function invalidateAllMessage() {
-		echo "<div id='message' class='updated fade'><p><strong>".__('All objects in Varnish tier and content delivery network have been invalidated. ', 'twentysteps-bricks-bridge')."</strong></p></div>";
+		echo "<div id='message' class='updated fade'><p><strong>".__('All objects in Varnish tier and content delivery network have been invalidated. ', 'twentysteps-bricks-bridge-wp')."</strong></p></div>";
 	}
 
 	// push to app
@@ -595,8 +603,8 @@ class BricksBridge {
 				'deleted_post' => 'queueDeletedPostEvent',
 				'trashed_post' => 'queueTrashedPostEvent',
 				'edit_post' => 'queueEditPostEvent',
-				/*'publish_post' => 'queuePublishPostEvent',
-				'publish_future_post' => 'queuePublishFuturePostEvent',*/
+				'publish_post' => 'queuePublishPostEvent',
+				'publish_future_post' => 'queuePublishFuturePostEvent',
 				'transition_post_status' => 'queueTransitionPostStatusEvent',
 				'created_term' => 'queueCreatedTermEvent',
 				'edited_term' => 'queueEditedTermEvent',
@@ -624,7 +632,7 @@ class BricksBridge {
 			$this->queueEvent('NODE_PREVIEW',array(
 				'id' => $id,
 				'username' => $currentUser->user_login,
-				'username_app' => get_the_author_meta( '20steps_bricks_bridge_username_app', $currentUser->ID )
+				'username_app' => get_the_author_meta( 'twentysteps_bricks_bridge_wp_username_app', $currentUser->ID )
 			));
 		}
 	}
@@ -672,10 +680,21 @@ class BricksBridge {
 
 	public function queueTransitionPostStatusEvent($newStatus, $oldStatus, $post=null) {
 		if($post != null) {
+			/**
+			 * @var stdClass $post
+			 */
 			$this->queueEvent('NODE_UPDATED',array('id' => $post->ID));
 		}
 	}
 
+	public function queuePublishPostEvent($id) {
+		$this->queueEvent('NODE_PUBLISHED',array('id' => $id));
+	}
+	
+	public function queuePublishFuturePostEvent($id) {
+		$this->queueEvent('NODE_PLANNED',array('id' => $id));
+	}
+	
 	public function queueEditPostEvent($id) {
 		$this->queueEvent('NODE_UPDATED',array('id' => $id));
 	}
@@ -761,7 +780,7 @@ class BricksBridge {
 			}
 		}
 
-		if (isset($_GET['20steps_bricks_bridge_invalidate_all']) && current_user_can('manage_options') && check_admin_referer('twentysteps-bricks-bridge')) {
+		if (isset($_GET['twentysteps_bricks_bridge_wp_invalidate_all']) && current_user_can('manage_options') && check_admin_referer('twentysteps-bricks-bridge-wp')) {
 			// push event authenticating using api key
 			$url = $this->getApiUrlPrefix().'event?key='.$this->getApiKey().'&kernel=wordpress&domain='.urlencode($this->domain).'&scope='.urlencode($this->blogId).'&event='.urlencode('INVALIDATE_ALL').'&data='.urlencode(serialize($data));
 			wp_remote_get($url);
