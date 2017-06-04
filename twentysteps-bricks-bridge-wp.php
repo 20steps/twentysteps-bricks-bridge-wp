@@ -590,7 +590,7 @@
                 <h1>Quick Push</h1>
                 <form action="<?php echo admin_url('admin-post.php?action=push_to_app_send'); ?>" method="post">
 					<?php wp_nonce_field('twentysteps_bricks_bridge_nonce'); ?>
-                    <h3>Do the quick push</h3>
+                    <h3>Push message to topic wihout further targeting.</h3>
                     <table class="form-table">
                         <tbody>
                         <tr>
