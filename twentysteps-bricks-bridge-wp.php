@@ -484,7 +484,8 @@
 		
 		public function addPushMenu() {
 			if ($this->isPushEnabled()) {
-				add_object_page('Push to App','Push to App', 'edit_posts', 'push_to_app', array($this,'pushToAppPage'),'',23);
+				add_object_page('Quick push','Mobile Push', 'edit_posts', 'push_to_app', array($this,'pushToAppPage'),'',23);
+				add_submenu_page('push_to_app','Quick Push','Quick Push', 'edit_posts', 'push_to_app', array($this,'pushToAppPage') );
 				add_submenu_page('push_to_app','Settings','Settings', 'manage_options', 'push_to_app_settings', array($this,'pushToAppSettingsPage') );
 			} else {
 				add_menu_page('Push to App','Push Menu', 'manage_options', 'push_to_app_settings', array($this,'pushToAppSettingsPage') );
@@ -494,7 +495,7 @@
 		public function pushToAppSettingsPage() {
 			?>
             <div class="wrap">
-                <h1>Configure Bricks Push To App</h1>
+                <h1>Configure Mobile Push</h1>
                 <form action="<?php echo admin_url('admin-post.php?action=push_to_app_settings_update'); ?>" method="post">
 					<?php wp_nonce_field('twentysteps_bricks_bridge_nonce'); ?>
                     <h3>Connector</h3>
@@ -586,11 +587,10 @@
 		public function pushToAppPage() {
 			?>
             <div class="wrap">
-                <h1>Push to App</h1>
+                <h1>Quick Push</h1>
                 <form action="<?php echo admin_url('admin-post.php?action=push_to_app_send'); ?>" method="post">
 					<?php wp_nonce_field('twentysteps_bricks_bridge_nonce'); ?>
-                    <h3>Do the push</h3>
-                    <p>On special request this is allowed for editors. But please be careful what you do and don't push to much.</p>
+                    <h3>Do the quick push</h3>
                     <table class="form-table">
                         <tbody>
                         <tr>
@@ -628,7 +628,7 @@
                         </tbody>
                     </table>
                     <p class="submit">
-                        <input type="submit" id="submit" name="submit" class="button button-primary" value="Push">
+                        <input type="submit" id="submit" name="submit" class="button button-primary" value="Quick push">
                     </p>
                     <div>=> <?php echo $this->getFlash() ?></div>
                 </form>
