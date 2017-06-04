@@ -484,7 +484,7 @@
 		
 		public function addPushMenu() {
 			if ($this->isPushEnabled()) {
-				add_object_page('Quick push','Mobile Push', 'edit_posts', 'push_to_app', array($this,'pushToAppPage'),'',23);
+				add_object_page('Quick push','Mobile Push', 'edit_posts', 'push_to_app', array($this,'pushToAppPage'),'dashicons-rss',23);
 				add_submenu_page('push_to_app','Quick Push','Quick Push', 'edit_posts', 'push_to_app', array($this,'pushToAppPage') );
 				add_submenu_page('push_to_app','Settings','Settings', 'manage_options', 'push_to_app_settings', array($this,'pushToAppSettingsPage') );
 			} else {
@@ -544,7 +544,7 @@
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="push_api_channels">Channels<br/><small>arn,name,arn,name,arn,name,...</small></label>
+                                <label for="push_api_channels">Topics<br/><small>arn,name,arn,name,arn,name,...</small></label>
                             </th>
                             <td>
                                 <input type="text" id="push_api_channels" name="push_api_channels" class="regular-text" value="<?php echo $this->getPushApiChannelsString() ?>">
@@ -595,7 +595,7 @@
                         <tbody>
                         <tr>
                             <th scope="row">
-                                <label for="channel">Channel<br/><small>Ask your product owner</small></label>
+                                <label for="channel">Topic<br/><small>Ask your product owner for definitions</small></label>
                             </th>
                             <td>
                                 <select name="arn" size="1"><?php
