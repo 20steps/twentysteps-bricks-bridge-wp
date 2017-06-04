@@ -89,6 +89,10 @@
 				add_action('edit_form_advanced', array($this,'forcePreviewBeforePublish'));
 			}
 			
+			if ( isset($_GET['flash']) ) {
+				add_action( 'admin_notices' , array( $this, 'getFlashMessage'));
+			}
+			
 			// push to app
 			add_action('admin_post_push_to_app_settings_update',  array($this, 'pushToAppSettingsUpdate'));
 			if ($this->isPushEnabled()) {
@@ -154,6 +158,10 @@
 				return $_GET['flash'];
 			}
 			return 'n/a';
+		}
+		
+		public function getFlashMessage() {
+		    echo '<div class="notice notice-success"><p>'.$this->getFlash().'</p></div>';
 		}
 		
 		public function getInvalidateAllEnabled() {
@@ -630,7 +638,6 @@
                     <p class="submit">
                         <input type="submit" id="submit" name="submit" class="button button-primary" value="Quick push">
                     </p>
-                    <div>=> <?php echo $this->getFlash() ?></div>
                 </form>
             </div>
 			<?php
