@@ -15,12 +15,8 @@
 	*/
 	
 	class BricksBridge {
-		
-		/**
-		 * @var array
-		 */
-		protected $eventQueue = [];
-		/**
+        
+        /**
 		 * @var null|string
 		 */
 		protected $domain = null;
@@ -29,6 +25,11 @@
 		 * @var integer
 		 */
 		protected $blogId = null;
+		
+		/**
+		 * @var array
+		 */
+		protected $eventQueue = [];
 		
 		// initialization
 		
@@ -139,7 +140,7 @@
 			        return '[OK]';
                 } else {
 			        $responseBody = wp_remote_retrieve_body($response);
-			        return '['.$responseCode.','.substr($responseBody,0,512).']';
+			        return '['.$responseCode.','.substr(strip_html($responseBody),0,512).']';
                 }
 			} else {
 			    return '[ITERNAL_ERROR]';
@@ -398,7 +399,7 @@
 		}
 		
 		
-		function settingsUpdate(){
+		public function settingsUpdate(){
 			// check if nonce valid and user allowed to update settings
 			check_admin_referer('twentysteps_bricks_bridge_nonce');
 			if(!current_user_can('manage_network_options')) {
@@ -422,7 +423,7 @@
 		
 		// extend user profile (e.g. for external preview)
 		
-		function extendUserProfile($user) {
+		public function extendUserProfile($user) {
 			?>
             <hr/>
             <h3 id="twentysteps_bricks_bridge">20steps Bricks Bridge</h3>
@@ -441,7 +442,7 @@
 			<?php
 		}
 		
-		function extendUserProfileUpdate($userId) {
+		public function extendUserProfileUpdate($userId) {
 			if ( current_user_can('edit_user',$userId)) {
 				update_user_meta($userId, 'twentysteps_bricks_bridge_wp_username_app', $_POST['twentysteps_bricks_bridge_wp_username_app']);
 			}
@@ -449,7 +450,7 @@
 		
 		// invalidate all
 		
-		function adminbarInvalidateAll($admin_bar){
+		public function adminbarInvalidateAll($admin_bar){
 			$admin_bar->add_menu( array(
 				'id'	=> 'twentysteps-bricks-bridge-wp-invalidate-all',
 				'title' => 'Invalidate Varnish and CDN',
@@ -460,7 +461,7 @@
 			));
 		}
 		
-		function invalidateAll() {
+		public function invalidateAll() {
 			$url = wp_nonce_url(admin_url('?twentysteps_bricks_bridge_wp_invalidate_all'), 'twentysteps-bricks-bridge-wp');
 			$intro = sprintf( __('<a href="%1$s">20steps Bricks Bridge / Invalidate All</a> 20steps Bricks Bridge automatically invalidates pages and posts in Varnish and CDN when published or updated. Click here to invalidate everything e.g. after changing theme options.', 'twentysteps-bricks-bridge-wp' ), 'http://wordpress.org/plugins/twentysteps-bricks-bridge-wp/' );
 			$button =  __('Press the button below to force it to purge your entire cache.', 'twentysteps-bricks-bridge-wp' );
@@ -483,7 +484,7 @@
 			echo "<p class='twentysteps-bricks-bridge-wp-invalidate-all'>$text</p>\n";
 		}
 		
-		function invalidateAllMessage() {
+		public function invalidateAllMessage() {
 			echo "<div id='message' class='updated fade'><p><strong>".__('All objects in Varnish tier and content delivery network have been invalidated. ', 'twentysteps-bricks-bridge-wp')."</strong></p></div>";
 		}
 		
@@ -571,7 +572,7 @@
 			<?php
 		}
 		
-		function pushToAppSettingsUpdate() {
+		public function pushToAppSettingsUpdate() {
 			
 			// check if nonce valid and user allowed to update settings
 			check_admin_referer('twentysteps_bricks_bridge_nonce');
@@ -643,7 +644,7 @@
 			<?php
 		}
 		
-		function pushToAppSend() {
+		public function pushToAppSend() {
 			
 			// check if nonce valid and user allowed to update settings
 			check_admin_referer('twentysteps_bricks_bridge_nonce');
@@ -651,7 +652,6 @@
 			$url = $this->getPushApiUrlPrefix().'?key='.$this->getPushApiKey().'&text='.urlencode($_POST['text']).'&url='.urlencode($_POST['url']).'&arn='.urlencode($_POST['arn']);
 			$response = wp_remote_get($url);
 			
-			$flash = '';
 			if (is_wp_error($response)) {
 				$flash = '['.$response->get_error_message().']';
 			} elseif (is_array($response)) {
@@ -660,7 +660,7 @@
 					$flash = '[OK]';
 				} else {
 					$responseBody = wp_remote_retrieve_body($response);
-					$flash = '['.$responseCode.','.substr($responseBody,0,512).']';
+					$flash = '['.$responseCode.','.substr(strip_tags($responseBody),0,512).']';
 				}
 			} else {
 				$flash = '[INTERNAL_ERROR]';
@@ -717,11 +717,11 @@
 			}
 		}
 		
-		function forcePreviewBeforePublishInit() {
+		public function forcePreviewBeforePublishInit() {
 			wp_enqueue_script('jquery');
 		}
 		
-		function insertHidePreview() {
+		public function insertHidePreview() {
 			echo "<script type='text/javascript'>\n";
 			echo "
 					  jQuery('#publish').hide();
@@ -732,7 +732,8 @@
 				  ";
 			echo "</script>\n";
 		}
-		function forcePreviewBeforePublish() {
+		
+		public function forcePreviewBeforePublish() {
 			
 			// Global object containing current admin page
 			global $pagenow;
@@ -869,4 +870,6 @@
 		
 	}
 	
+	// create singleton
+ 
 	$bricksBridge = new BricksBridge();
