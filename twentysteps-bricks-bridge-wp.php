@@ -601,38 +601,38 @@
                     <h3>Push message to topic wihout further targeting.</h3>
                     <table class="form-table">
                         <tbody>
-                        <tr>
-                            <th scope="row">
-                                <label for="channel">Topic<br/><small>Ask your product owner for definitions</small></label>
-                            </th>
-                            <td>
-                                <select name="arn" size="1"><?php
-										foreach ($this->getPushApiChannels() as $arn => $name) {
-											if (strpos($name, 'Editors') !== false) {
-												echo '<option value="'.$arn.'" selected="selected">'.$name.'</option>';
-											} else {
-												echo '<option value="'.$arn.'">'.$name.'</option>';
-											}
-										}
-									?></select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                <label for="text">Message<br/><small>Text, max. 200 characters</small></label>
-                            </th>
-                            <td>
-                                <input type="text" id="text" name="text" class="regular-text" value="">
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                <label for="url">URL (optional)<br/><small>e.g. http://www.what.com/ever</small></label>
-                            </th>
-                            <td>
-                                <input type="text" id="url" name="url" class="regular-text" value="">
-                            </td>
-                        </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="channel">Topic<br/><small>Ask your product owner for definitions</small></label>
+                                </th>
+                                <td>
+                                    <select name="arn" size="1"><?php
+                                            foreach ($this->getPushApiChannels() as $arn => $name) {
+                                                if (strpos($name, 'Editors') !== false) {
+                                                    echo '<option value="'.$arn.'" selected="selected">'.$name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$arn.'">'.$name.'</option>';
+                                                }
+                                            }
+                                        ?></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="text">Message<br/><small>Text, max. 200 characters</small></label>
+                                </th>
+                                <td>
+                                    <input type="text" id="text" name="text" class="regular-text" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="url">URL (optional)<br/><small>e.g. http://www.what.com/ever</small></label>
+                                </th>
+                                <td>
+                                    <input type="text" id="url" name="url" class="regular-text" value="">
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <p class="submit">
@@ -663,7 +663,7 @@
 					$flash = '['.$responseCode.','.substr($responseBody,0,512).']';
 				}
 			} else {
-				$flash = '[ITERNAL_ERROR]';
+				$flash = '[INTERNAL_ERROR]';
 			}
 			
 			// process your fields from $_POST here and update_site_option
